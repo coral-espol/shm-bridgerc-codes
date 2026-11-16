@@ -1,0 +1,9 @@
+
+numpy
+scipy
+opencv-python
+pyserial
+gpiozero
+flask
+ai-edge-litert
+adafruit-circuitpython-adxl34x

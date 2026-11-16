@@ -1,0 +1,200 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SHM SCADA</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}" defer></script>
+</head>
+
+<body>
+
+<header class="header-scada">
+
+    <div class="system-title">
+        ⚲ CENTRO DE MONITOREO SHM
+    </div>
+
+    <div class="btn-group">
+
+        <button class="btn-dir active"
+                id="btn_ida"
+                onclick="setSentido('IDA')">
+            IDA
+        </button>
+
+        <button class="btn-dir"
+                id="btn_regreso"
+                onclick="setSentido('REGRESO')">
+            REGRESO
+        </button>
+
+        <button class="btn-color"
+                onclick="fetch('/api/toggle_color',{method:'POST'})">
+            🎨 RGB / BGR
+        </button>
+
+        <button class="btn-reset"
+                onclick="fetch('/api/reset',{method:'POST'}).then(()=>location.reload())">
+            REINICIAR
+        </button>
+
+    </div>
+
+</header>
+
+
+<div class="alert-banner" id="alert_box">
+
+    <span id="alert_text">
+        🚀 IA 100% Autónoma - Hilos Desacoplados (Modo ECO)
+    </span>
+
+    <span id="reloj_sistema">
+        --:--:--
+    </span>
+
+</div>
+
+
+<main class="grid-2x2">
+
+    <!-- 1. CÁMARA -->
+
+    <section class="card-scada">
+
+        <div class="card-title">
+            <span>1. Cámara IA + OpenCV</span>
+            <span class="status-green">ECO FPS</span>
+        </div>
+
+        <img class="video-stream"
+             src="/video_feed"
+             alt="Video">
+
+        <div class="telemetry-bar">
+
+            <div>
+                SENTIDO:
+                <span class="telemetry-val" id="sentido_tag">IDA</span>
+            </div>
+
+            <div>
+                DIST:
+                <span class="telemetry-val" id="dist_total">0.000m</span>
+            </div>
+
+            <div>
+                X PUENTE:
+                <span class="telemetry-val" id="pos_puente">0.000m</span>
+            </div>
+
+            <div>
+                VEL:
+                <span class="telemetry-val" id="vel">0.00 m/s</span>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- 2. FORMA MODAL -->
+
+    <section class="card-scada">
+
+        <div class="card-title">
+            <span>2. Forma Modal Φ₁(x)</span>
+            <span>X: Roja (Fisura) | Verde (Corrosión)</span>
+        </div>
+
+        <div id="plot_modal" class="plot-frame"></div>
+
+    </section>
+
+
+    <!-- 3. TELEMETRÍA -->
+
+    <section class="card-scada">
+
+        <div class="card-title">
+            <span>3. Telemetría ADXL345</span>
+        </div>
+
+        <div id="plot_hilbert" class="plot-frame"></div>
+
+    </section>
+
+
+    <!-- 4. GEMELO DIGITAL -->
+
+    <section class="card-scada">
+
+        <div class="card-title">
+
+            <span>4. Gemelo 3D & Registro</span>
+
+            <span id="count_fallas" class="event-count">
+                0 Eventos
+            </span>
+
+        </div>
+
+        <div id="canvas3d_container"></div>
+
+        <div class="log-table-wrapper">
+
+            <table class="scada-table">
+
+                <thead>
+                    <tr>
+                        <th>Hora</th>
+                        <th>Sen.</th>
+                        <th>X (m)</th>
+                        <th>Tipo</th>
+                        <th>Vib.</th>
+                        <th>ω</th>
+                        <th>GPS</th>
+                        <th>Foto</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tabla_fallas"></tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- MODAL DE FOTOGRAFÍA -->
+
+<div class="modal-overlay"
+     id="modal_foto"
+     onclick="this.style.display='none'">
+
+    <img class="modal-content"
+         id="modal_img"
+         src="">
+
+    <div class="modal-caption"
+         id="modal_caption">
+    </div>
+
+</div>
+
+</body>
+</html>
